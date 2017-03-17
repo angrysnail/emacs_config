@@ -22,10 +22,14 @@
 
 (when (>= emacs-major-version 24)
   (require 'package)
-  (add-to-list
-   'package-archives
-   '("melpa" . "http://melpa.org/packages/")
-   t)
+  (add-to-list 'package-archives
+	       '("melpa" . "http://melpa.org/packages/") t)
+  (add-to-list 'package-archives
+	       '("elpa" . "http://tromey.com/elpa/") t)
+  (add-to-list 'package-archives 
+	       '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  (add-to-list 'package-archives
+	       '("melpa" . "http://melpa.milkbox.net/packages/") t)
   (package-initialize))
 
 ;;------------------------------------------------------
@@ -123,4 +127,8 @@
 (global-set-key [f3] 'highlight-symbol-next)
 (global-set-key [(shift f3)] 'highlight-symbol-prev)
 (global-set-key [(meta f3)] 'highlight-symbol-query-replace)
-
+;;----------------------------------------------------
+(add-to-list 'load-path "~/.emacs.d/selfels/styleguide/")
+(require 'google-c-style)
+(add-hook 'c-mode-common-hook 'google-set-c-style)
+(add-hook 'c-mode-common-hook 'google-make-newline-indent)
