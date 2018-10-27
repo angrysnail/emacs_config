@@ -1,8 +1,7 @@
+;;;zcy
+;;; Commentary:zcy
+;;; package:zcy
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (tango-dark)))
  '(ecb-layout-window-sizes nil)
  '(ecb-options-version "2.50")
@@ -10,31 +9,35 @@
  '(line-spacing 0.1)
  '(safe-local-variable-values (quote ((ffip-project-root . "~/.emacs.d/")))))
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-;;-----------------------------------------------------
-;;一些通用的设置
-;;-----------------------------------------------------
-(global-linum-mode 1)
 
+)
+;;===================================================
+;; A. 一些通用的设置
+;;===================================================
+(global-linum-mode 1)
 (when (>= emacs-major-version 24)
   (require 'package)
   (add-to-list 'package-archives
-	       '("melpa" . "http://melpa.org/packages/") t)
+             '("melpa" . "http://melpa.org/packages/") t)
   (add-to-list 'package-archives
-	       '("elpa" . "http://tromey.com/elpa/") t)
+             '("elpa" . "http://tromey.com/elpa/") t)
   (add-to-list 'package-archives 
-	       '("marmalade" . "http://marmalade-repo.org/packages/") t)
-  (add-to-list 'package-archives
-	       '("melpa" . "http://melpa.milkbox.net/packages/") t)
+             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  ;;(add-to-list 'package-archives
+  ;;           '("melpa" . "http://melpa.milkbox.net/packages/") t)
+  ;;(add-to-list 'package-archives 
+  ;;	       '("MELPA Stable" . "http://stable.melpa.org/packages/") t)
   (package-initialize))
-
-;;------------------------------------------------------
-;;find-file-in-project   ffip-create-project-file
-;;------------------------------------------------------
+;-->>必须放在package设置的后面，否则说找不到，说明之后才有load-path<<--
+(require 'flycheck)
+(global-flycheck-mode)
+;;-->>打开文件时自动列出文件列表<<--
+(ido-mode t)
+;-->>取消备份文件即~文件<<--
+(setq make-backup-files nil)
+;;===================================================
+;; B. find-file-in-project   ffip-create-project-file
+;;===================================================
 (autoload 'find-file-in-project "find-file-in-project" nil t)
 (autoload 'find-file-in-project-by-selected "find-file-in-project" nil t)
 (autoload 'find-directory-in-project-by-selected "find-file-in-project" nil t)
@@ -43,13 +46,15 @@
 (autoload 'ffip-ivy-resume "find-file-in-project" nil t)
 (global-set-key (kbd "C-c f p") 'find-file-in-project)
 (global-set-key (kbd "C-c f c") 'find-file-in-current-directory)
-;;-----------------------------------------------------
-;;Automatically turns on cscope-minor-mode when editing C and C++ sources
-;;-----------------------------------------------------
+
+;;===================================================
+;; C. Automatically turns on cscope-minor-mode when editing C and C++ sources
+;;===================================================
 (cscope-setup)
-;;-----------------------------------------------------
-;;ECB的配置
-;;-----------------------------------------------------
+
+;;===================================================
+;; D. ECB的配置
+;;===================================================
 ;;自动启动ECB
 ;;(require 'ecb)
 ;;并且不显示每日提示
@@ -69,31 +74,46 @@
 (global-set-key (kbd "C-c 4") 'ecb-maximize-window-history)
 ;;;; 恢复原始窗口布局
 (global-set-key (kbd "C-c 0") 'ecb-restore-default-window-sizes)
-;;-----------------------------------------------------
-;;CEDET配置
-;;-----------------------------------------------------
+;;=====================================================
+;; E. CEDET配置
+;;=====================================================
 ;; Enable the Project management system
 (global-ede-mode 1)
 ;; Enable prototype help and smart completion 
 ;;(semantic-load-enable-code-helpers)      
 ;;(global-srecode-minor-mode 1)
 
+;;=====================================================
+;; F. 用ibuffer来替换原来的buffer选择框
+;;=====================================================
 (require 'ibuffer)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 
+;;=====================================================
+;; G. 列出所有的kill ring中的东西
+;;=====================================================
 (require 'browse-kill-ring)
 (global-set-key [(control c)(k)] 'browse-kill-ring)
 (browse-kill-ring-default-keybindings)
-;;TAB页显示
+;;=====================================================
+;; H. TAB页显示，但在ssh时可能不能用
+;;=====================================================
 (require 'tabbar)
 (tabbar-mode)
 (global-set-key (kbd "<C-prior>")   'tabbar-backward)
 (global-set-key (kbd "<C-next>")    'tabbar-forward)
-;;表格工具
+;;=====================================================
+;; I. 表格工具及org工具的配置
+;;=====================================================
 (autoload 'table-insert "table" "WYGIWYS table editor")
-;;-----------------------------------------------------
-;;最近打开的文件列表
-;;-----------------------------------------------------
+;;-->>插入当前时间<<--
+(defun insertdate ()
+  (interactive)
+  (insert (format-time-string "\n* ~~~~~~~~~~~~~~~~~~~~~~~~ %Y-%m-%d , 星期%a ~~~~~~~~~~~~~~~~~~~~~ * \n")))
+(global-set-key (kbd "C-c i d") 'insertdate)
+;;=====================================================
+;; J. 最近打开的文件列表
+;;=====================================================
 (require 'recentf)
 (recentf-mode 1)
 (defun recentf-open-files-compl ()
@@ -105,22 +125,19 @@
 	 (fname (completing-read (car prompt) (cdr prompt) nil nil)))
     (find-file (cdr (assoc-ignore-representation fname tocpl))))) 
 (global-set-key [(control c)(control r)] 'recentf-open-files-compl)
-;;-----------------------------------------------------
-;;ELPY的配置
-;;-----------------------------------------------------
+
+;;=====================================================
+;; K. 主要是用来对python进行配置
+;;=====================================================
 (elpy-enable)
-;;-----------------------------------------------------
+;;=====================================================
+;; L. 主要用于代码的片段快速录入
+;;=====================================================
 (require 'yasnippet)
 (yas-global-mode 1)
-;;-----------------------------------------------------
-;;插入当前时间
-(defun insertdate ()
-  (interactive)
-  (insert (format-time-string "\n* ~~~~~~~~~~~~~~~~~~~~~~~~ %Y-%m-%d , 星期%a ~~~~~~~~~~~~~~~~~~~~~ * \n")))
-(global-set-key (kbd "C-c i d") 'insertdate)
-;;取消备份文件 ~
-(setq make-backup-files nil)
-;;高亮显示当前的对象
+;;=====================================================
+;; M. 高亮显示当前的对象
+;;=====================================================
 (add-to-list 'load-path "~/.emacs.d/selfels/highlight-symbol.el-master")
 (require 'highlight-symbol)
 (global-set-key [(control f3)] 'highlight-symbol)
@@ -133,17 +150,33 @@
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
 
-
-;;-------------------yaml------------
+;;=====================================================
+;; N. 各种语言的配置，主要是mode的配置
+;;=====================================================
+;;-->>yaml<<--
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
-
-;;----------go mode----------------
-(add-to-list 'load-path "~/.emacs.d/selfels/")
+(add-to-list 'auto-mode-alist '("\\.yaml\\'" . yaml-mode))
+;;-->>go mode<<--
+(add-to-list 'load-path "~/.emacs.d/selfels/go/")
 (autoload 'go-mode "go-mode" nil t)
+(autoload 'go-autocomplete "go-autocomplete" nil t)
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+(eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-golangci-lint-setup))
+(require 'go-autocomplete)
+(require 'auto-complete-config)
+;;可进行自定义的补全
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(ac-config-default)
+;; 设置为t表示忽略大小写，设置为nil表示区分大小写
+;; 默认情况下为smart，表示如果输入的字符串不含有大写字符才会忽略大小写
+(setq ac-ignore-case t)
 
-;;----------删除键的设置--------------
+
+
+;;=====================================================
+;; Z. 各种杂项的处理
+;;=====================================================
+;;-->>主要是为了secureCRT中回退键变成帮助键<<--
 (global-set-key "\C-h" 'backward-delete-char-untabify)
 ;; (global-set-key "\d" 'delete-char)
-
