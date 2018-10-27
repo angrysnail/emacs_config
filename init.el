@@ -132,3 +132,18 @@
 (require 'google-c-style)
 (add-hook 'c-mode-common-hook 'google-set-c-style)
 (add-hook 'c-mode-common-hook 'google-make-newline-indent)
+
+
+;;-------------------yaml------------
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
+
+;;----------go mode----------------
+(add-to-list 'load-path "~/.emacs.d/selfels/")
+(autoload 'go-mode "go-mode" nil t)
+(add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
+
+;;----------删除键的设置--------------
+(global-set-key "\C-h" 'backward-delete-char-untabify)
+;; (global-set-key "\d" 'delete-char)
+
