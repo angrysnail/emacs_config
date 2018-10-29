@@ -1,5 +1,6 @@
-;;;zcy
-;;; Commentary:zcy
+;;; package --- Summary
+;;; zcy
+;;; Commentary:
 ;;; package:zcy
 (custom-set-variables
  '(custom-enabled-themes (quote (tango-dark)))
@@ -15,18 +16,25 @@
 ;; A. 一些通用的设置
 ;;===================================================
 (global-linum-mode 1)
+;;启动c+x c+u进行大小写变换
+(put 'upcase-region 'disabled nil)
 (when (>= emacs-major-version 24)
   (require 'package)
-  (add-to-list 'package-archives
-             '("melpa" . "http://melpa.org/packages/") t)
-  (add-to-list 'package-archives
-             '("elpa" . "http://tromey.com/elpa/") t)
-  (add-to-list 'package-archives 
-             '("marmalade" . "http://marmalade-repo.org/packages/") t)
+  ;;(add-to-list 'package-archives
+  ;;         '("melpa" . "http://melpa.org/packages/") t)
+  ;;(add-to-list 'package-archives
+  ;;         '("elpa" . "http://tromey.com/elpa/") t)
+  ;;(add-to-list 'package-archives 
+  ;;         '("marmalade" . "http://marmalade-repo.org/packages/") t)
   ;;(add-to-list 'package-archives
   ;;           '("melpa" . "http://melpa.milkbox.net/packages/") t)
   ;;(add-to-list 'package-archives 
   ;;	       '("MELPA Stable" . "http://stable.melpa.org/packages/") t)
+  (setq package-archives
+		'(("melpa-cn" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")
+		  ("org-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/org/")
+		  ("gnu-cn"   . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu/")
+		  ("melpa-stable" . "https://stable.melpa.org/packages/")))
   (package-initialize))
 ;-->>必须放在package设置的后面，否则说找不到，说明之后才有load-path<<--
 (require 'flycheck)
@@ -153,6 +161,25 @@
 ;;=====================================================
 ;; N. 各种语言的配置，主要是mode的配置
 ;;=====================================================
+;;可进行自定义的补全
+(require 'auto-complete-config)
+(auto-complete-mode t)
+(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
+(ac-config-default)
+;;弹出选基后，进行上下选择的快捷键
+(setq ac-use-menu-map t)
+(define-key ac-menu-map "\C-n" 'ac-next)
+(define-key ac-menu-map "\C-p" 'ac-previous)
+;;风格缩进为4
+(setq-default indent-tabs-mode nil)
+(setq c-basic-offset 4)
+(setq default-tab-width  4)
+(setq-default tab-width 4)
+
+;;(set-default indent-tabs-mode nil)
+;; 设置为t表示忽略大小写，设置为nil表示区分大小写
+;; 默认情况下为smart，表示如果输入的字符串不含有大写字符才会忽略大小写
+(setq ac-ignore-case t)
 ;;-->>yaml<<--
 (require 'yaml-mode)
 (add-to-list 'auto-mode-alist '("\\.yml\\'" . yaml-mode))
@@ -161,17 +188,16 @@
 (add-to-list 'load-path "~/.emacs.d/selfels/go/")
 (autoload 'go-mode "go-mode" nil t)
 (autoload 'go-autocomplete "go-autocomplete" nil t)
+(global-set-key (kbd "C-c C-d") 'godoc-at-point)
+;;-->>go语言的自动联想设置，需执行下面的语句安装工具并设置一下<<--
+;;go get -u github.com/nsf/gocode
+;;gocode set propose-builtins true
+(require 'go-autocomplete)
+
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-golangci-lint-setup))
-(require 'go-autocomplete)
-(require 'auto-complete-config)
-;;可进行自定义的补全
-(add-to-list 'ac-dictionary-directories "~/.emacs.d/ac-dict")
-(ac-config-default)
-;; 设置为t表示忽略大小写，设置为nil表示区分大小写
-;; 默认情况下为smart，表示如果输入的字符串不含有大写字符才会忽略大小写
-(setq ac-ignore-case t)
-
+;;保存文件的时候对该源文件做一下gofmt
+(add-hook 'before-save-hook #'gofmt-before-save)
 
 
 ;;=====================================================
