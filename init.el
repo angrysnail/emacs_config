@@ -197,7 +197,8 @@
 (add-to-list 'auto-mode-alist '("\\.go\\'" . go-mode))
 (eval-after-load 'flycheck '(add-hook 'flycheck-mode-hook #'flycheck-golangci-lint-setup))
 ;;保存文件的时候对该源文件做一下gofmt
-(add-hook 'before-save-hook #'gofmt-before-save)
+(eval-after-load 'go-mode '(add-hook 'before-save-hook #'gofmt-before-save))
+
 
 
 ;;=====================================================
